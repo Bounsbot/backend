@@ -42,7 +42,6 @@
     "class-validator": "^0.14.0",
     "luxon": "^3.3.0",
     "mongoose": "^7.4.2",
-    "nest-aws-sdk": "^3.0.1",
     "redis": "^4.6.7",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^5.0.1",

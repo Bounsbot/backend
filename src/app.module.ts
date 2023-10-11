@@ -5,10 +5,6 @@ import { CacheModule, CacheStore } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
 import { HealthModule } from './health/health.module';
-import { PixelwarModule } from './pixelwar/pixelwar.module';
-import { S3Module } from './S3/S3.module';
-import { AwsSdkModule } from 'nest-aws-sdk';
-import { S3 } from 'aws-sdk';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventModule } from './event/event.module';
 
@@ -33,21 +29,8 @@ import { EventModule } from './event/event.module';
         password: process.env.MONGO_INITDB_ROOT_PASSWORD,
       },
     }),
-    AwsSdkModule.forRoot({
-      defaultServiceOptions: {
-        region: process.env.AWS_REGION,
-        endpoint: process.env.AWS_ENDPOINT,
-        credentials: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        },
-      },
-      services: [S3],
-    }),
     ScheduleModule.forRoot(),
     HealthModule,
-    PixelwarModule,
-    S3Module,
     EventModule,
   ],
   controllers: [AppController],

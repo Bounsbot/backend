@@ -11,10 +11,9 @@ import {
 import { Namespace } from 'socket.io';
 import { EventService } from './event.service';
 import { Inject, Logger } from '@nestjs/common';
-import { PixelounsSocket } from '../@types/PixelounsSocket';
+import { BounsbotSocket } from '../@types/BounsbotSocket';
 import { AddPixelDto } from './dto/add-pixel.dto';
 import { CACHE_MANAGER, CacheStore } from '@nestjs/cache-manager';
-import { PixelwarService } from '../pixelwar/pixelwar.service';
 import { createCanvas, loadImage } from 'canvas';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { NotificationType } from './dto/emit-pixelwar.dto';
@@ -30,7 +29,6 @@ export class EventGateway
   constructor(
     private readonly eventService: EventService,
     @Inject(CACHE_MANAGER) private cacheManager: CacheStore,
-    private readonly pixelwarService: PixelwarService,
     private schedulerRegistry: SchedulerRegistry,
   ) { }
 
@@ -41,7 +39,7 @@ export class EventGateway
     this.logger.log(`Websocket Gateway initialized.`);
   }
 
-  async handleDisconnect(socket: PixelounsSocket) {
+  async handleDisconnect(socket: BounsbotSocket) {
     // if (socket.data.user) {
     //   const connectedUser = await this.eventService.getConnectedUser(
     //     socket.data.user?._id?.toString(),
@@ -64,15 +62,9 @@ export class EventGateway
     socket.disconnect();
   }
 
-  async handleConnection(socket: PixelounsSocket) {
+  async handleConnection(socket: BounsbotSocket) {
     try {
       this.logger.log(`User ${socket.id} connected`);
-
-      // await this.eventService.setConnectedUser(user._id.toString(), [
-      //   ...((await this.eventService.getConnectedUser(user._id.toString())) ||
-      //     []),
-      //   socket.id,
-      // ]);
 
       const lastPixel = await this.cacheManager.get(socket.handshake.address);
 
@@ -85,19 +77,13 @@ export class EventGateway
     }
   }
 
-  private disconnect(socket: PixelounsSocket) {
+  private disconnect(socket: BounsbotSocket) {
     socket.disconnect();
   }
 
   @SubscribeMessage('FETCH_CLIENT_VALUES')
-  async fetchClientValues(@ConnectedSocket() socket: PixelounsSocket, @MessageBody() arg: String): Promise<any> {
-    console.log(`La shard ${socket.id} demande ${arg}`);
-
-    // return new Promise((resolve, reject) => {
-    //   this.server.timeout(1000).emit("FETCH_CLIENT_VALUES", arg, (err, clientResponses) => {
-    //     err ? reject(err) : resolve(clientResponses);
-    //   })
-    // })
+  async fetchClientValues(@ConnectedSocket() socket: BounsbotSocket, @MessageBody() arg: String): Promise<any> {
+    console.log(`La shard ${socket.id} demande "${arg}"`);
 
     try {
       return await this.server.timeout(1000).emitWithAck("FETCH_CLIENT_VALUES", arg)
@@ -105,6 +91,5 @@ export class EventGateway
     catch (e) {
       return e
     }
-
   }
 }
