@@ -26,13 +26,7 @@ import { GuildModule } from './guild/guild.module';
         })) as unknown as CacheStore,
       }),
     }),
-    MongooseModule.forRoot(process.env.MONGO_URI, {
-      dbName: process.env.MONGO_DB,
-      auth: {
-        username: process.env.MONGO_INITDB_ROOT_USERNAME,
-        password: process.env.MONGO_INITDB_ROOT_PASSWORD,
-      },
-    }),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     ScheduleModule.forRoot(),
     HealthModule,
     CommandsModule,
