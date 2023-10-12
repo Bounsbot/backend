@@ -3,20 +3,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import mongoose, { Document, Types, HydratedDocument } from 'mongoose';
 
 // export type GlobalLevelDocument = GlobalLevel & Document;
-export type GlobalLevelDocument = HydratedDocument<GlobalLevel>;
+export type GuildLevelDocument = HydratedDocument<GuildLevel>;
 
 @Schema({
-    collection: "userinformations",
+    collection: "guildlevels",
     timestamps: true,
 })
-export class GlobalLevel {
-    @ApiProperty({
-        type: String,
-        description: "id of the level",
-    })
-    @Prop({ type: String })
-    _id: String;
-
+export class GuildLevel {
     @ApiProperty({
         type: String,
         description: "User identifiant",
@@ -51,13 +44,6 @@ export class GlobalLevel {
     })
     @Prop({ type: Number })
     xp: Number;
-
-    @ApiProperty({
-        type: Boolean,
-        description: "if user accept give information"
-    })
-    @Prop({ type: Boolean })
-    dataCollection: Boolean;
 }
 
-export const GlobalLevelSchema = SchemaFactory.createForClass(GlobalLevel);
+export const GuildLevelSchema = SchemaFactory.createForClass(GuildLevel);
