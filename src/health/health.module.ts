@@ -10,5 +10,4 @@ import { EventModule } from '../event/event.module';
 })
 export class HealthModule {
 
-
 }

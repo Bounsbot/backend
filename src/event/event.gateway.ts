@@ -40,41 +40,12 @@ export class EventGateway
   }
 
   async handleDisconnect(socket: BounsbotSocket) {
-    // if (socket.data.user) {
-    //   const connectedUser = await this.eventService.getConnectedUser(
-    //     socket.data.user?._id?.toString(),
-    //   );
-
-    //   const filteredUser = connectedUser.filter((c) => c !== socket.id);
-
-    //   if (filteredUser.length < 1) {
-    //     await this.eventService.deleteConnectedUser(
-    //       socket.data.user._id.toString(),
-    //     );
-    //   } else {
-    //     await this.eventService.setConnectedUser(
-    //       socket.data.user._id.toString(),
-    //       filteredUser,
-    //     );
-    //   }
-
-    // }
+    this.logger.log(`Socket ${socket.id} disconnected`);
     socket.disconnect();
   }
 
   async handleConnection(socket: BounsbotSocket) {
-    try {
-      this.logger.log(`User ${socket.id} connected`);
-
-      const lastPixel = await this.cacheManager.get(socket.handshake.address);
-
-      return this.server.to(socket.id).emit('status', {
-        timestamp: lastPixel,
-      });
-    } catch (e) {
-      console.error(e);
-      return this.disconnect(socket);
-    }
+    this.logger.log(`Socket ${socket.id} connected`);
   }
 
   private disconnect(socket: BounsbotSocket) {

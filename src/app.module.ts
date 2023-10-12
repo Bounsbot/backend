@@ -7,6 +7,9 @@ import type { RedisClientOptions } from 'redis';
 import { HealthModule } from './health/health.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventModule } from './event/event.module';
+import { CommandsModule } from './commands/commands.module';
+import { ShardsModule } from './shards/shards.module';
+import { LevelsModule } from './levels/levels.module';
 
 @Module({
   imports: [
@@ -31,8 +34,11 @@ import { EventModule } from './event/event.module';
     }),
     ScheduleModule.forRoot(),
     HealthModule,
+    CommandsModule,
+    ShardsModule,
+    LevelsModule,
     EventModule,
   ],
   controllers: [AppController],
 })
-export class AppModule {}
+export class AppModule { }
