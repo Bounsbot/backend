@@ -10,6 +10,7 @@ import { EventModule } from './event/event.module';
 import { CommandsModule } from './commands/commands.module';
 import { ShardsModule } from './shards/shards.module';
 import { LevelsModule } from './levels/levels.module';
+import { GuildModule } from './guild/guild.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { LevelsModule } from './levels/levels.module';
     CommandsModule,
     ShardsModule,
     LevelsModule,
+    GuildModule,
     EventModule,
   ],
   controllers: [AppController],
