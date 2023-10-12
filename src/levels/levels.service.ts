@@ -13,4 +13,12 @@ export class LevelsService {
     async findAll() {
         return await this.globalLevel.find().exec();
     }
+
+    async findGlobalLevelWithPagination(page: number = 0, limit: number = 100) {
+        return await this.globalLevel.find({ dataCollection: true }).sort({ xp: -1 }).limit(limit).skip(100 * page).exec()
+    }
+
+    async findGuildLevelWithPagination(guild: string, page: number = 0, limit: number = 100) {
+        return await this.globalLevel.find({ dataCollection: true }).sort({ xp: -1 }).limit(limit).skip(100 * page).exec()
+    }
 }

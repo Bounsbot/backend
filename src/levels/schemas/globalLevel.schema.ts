@@ -49,6 +49,13 @@ export class GlobalLevel {
     })
     @Prop({ type: Number })
     xp: Number;
+
+    @ApiProperty({
+        type: Boolean,
+        description: "if user accept give information"
+    })
+    @Prop({ type: Boolean })
+    dataCollection: Boolean;
 }
 
 export const GlobalLevelSchema = SchemaFactory.createForClass(GlobalLevel);
