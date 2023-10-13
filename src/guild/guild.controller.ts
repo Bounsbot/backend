@@ -66,13 +66,16 @@ export class GuildController {
     try {
       const shardsResponse = await this.eventService.server.timeout(1000).emitWithAck('SEND_MESSAGE', message);
 
-      const success = shardsResponse.find((e) => e !== null);
-      return { 
-        success: success || false,
+      return shardsResponse.find((e) => e !== null) || {
+        success: false,
+        message: "Bouns'bot n'a pas pu envoyé le message"
       }
     } catch (e) {
       this.logger.error(e)
-      return [];
+      return {
+        success: false,
+        message: "Bouns'bot n'a pas pu envoyé le message"
+      }
     }  
   }
 

@@ -45,7 +45,7 @@ export class ShardsController {
       return { shard: located || null }
     } catch (e) {
       console.error(e);
-      return [];
+      return { shard: null }
     }
   }
 }
