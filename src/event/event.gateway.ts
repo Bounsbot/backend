@@ -35,6 +35,9 @@ export class EventGateway
   @WebSocketServer()
   server: Namespace;
 
+  shards: Array<any> = Array.from({ length: process.env.SHARD_COUNT ? parseInt(process.env.SHARD_COUNT) : 1 }, (e, i) => (null));
+  shardsCount: number = process.env.SHARD_COUNT ? parseInt(process.env.SHARD_COUNT) : 1
+
   afterInit(): void {
     this.logger.log(`Websocket Gateway initialized.`);
   }
@@ -46,6 +49,13 @@ export class EventGateway
 
   async handleConnection(socket: BounsbotSocket) {
     this.logger.log(`Socket ${socket.id} connected`);
+    if (socket.handshake.headers.authorization !== process.env.TOKEN_WEBSOCKET) {
+      this.logger.log(`Socket ${socket.id} unauthorized`);
+      return socket.disconnect();
+    }
+
+    this.shards[parseInt(socket.handshake.headers.shard_id as string)] = socket.id
+    this.shardsCount = parseInt(socket.handshake.headers.shards_count as string)
   }
 
   private disconnect(socket: BounsbotSocket) {
