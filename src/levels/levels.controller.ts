@@ -33,13 +33,17 @@ export class LevelsController {
   })
   async locateGuildInShard(@Param('id') id: string, @Query("page", new DefaultValuePipe(0), ParseIntPipe) page: number = 0, @Query("limit", new DefaultValuePipe(100), ParseIntPipe) limit: number = 100) {
     let rank = await this.levelsService.findGuildLevelWithPagination(id, page, limit)
-    let configuration = await this.guildService.getConfiguration()
+    let configuration = await this.guildService.getRoleLevelConfiguration(id)
+    let levelsRole = await this.guildService.checkLevelRoles(id, configuration)
+
 
 
 
 
     return {
       rank,
+      configuration,
+      levelsRole
 
     }
 
