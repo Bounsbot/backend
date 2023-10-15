@@ -18,7 +18,7 @@ export class CommandsController {
     description: 'Returns the activate commands',
   })
   async allCommands() {
-    let commands = await this.cacheManager.get('COMMANDS');
+    let commands: Object = await this.cacheManager.get('COMMANDS');
 
     if (commands) return commands;
 
@@ -26,13 +26,18 @@ export class CommandsController {
     if (!firstSocket) return [];
 
     try {
-      commands = await this.eventService.server.timeout(1000).to(firstSocket).emitWithAck('COMMANDS');
+      const response = await this.eventService.server.timeout(1000).to(firstSocket).emitWithAck('COMMANDS');
+
+      commands = response.find((e) => e != null);
       this.cacheManager.set('COMMANDS', commands, { ttl: 10800 });
       return commands;
 
     } catch (e) {
       console.error(e);
-      return [];
+      return {
+        commands: [],
+        menu: [],
+      };
     }
   }
 }
