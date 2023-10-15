@@ -51,7 +51,7 @@ export class EventGateway
     this.logger.log(`Socket ${socket.id} connected`);
     if (socket.handshake.headers.authorization !== process.env.TOKEN_WEBSOCKET) {
       this.logger.log(`Socket ${socket.id} unauthorized`);
-      return socket.disconnect();
+      return socket.disconnect(true);
     }
 
     this.shards[parseInt(socket.handshake.headers.shard_id as string)] = socket.id
@@ -64,7 +64,7 @@ export class EventGateway
 
   @SubscribeMessage('FETCH_CLIENT_VALUES')
   async fetchClientValues(@ConnectedSocket() socket: BounsbotSocket, @MessageBody() arg: String): Promise<any> {
-    console.log(`La shard ${socket.id} demande "${arg}"`);
+    console.log(`La shard ${socket.id} demande cette information:\n> "${arg}"`);
 
     try {
       return await this.server.timeout(1000).emitWithAck("FETCH_CLIENT_VALUES", arg)
