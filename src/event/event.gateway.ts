@@ -63,14 +63,74 @@ export class EventGateway
   }
 
   @SubscribeMessage('FETCH_CLIENT_VALUES')
-  async fetchClientValues(@ConnectedSocket() socket: BounsbotSocket, @MessageBody() arg: String): Promise<any> {
-    console.log(`La shard ${socket.id} demande cette information:\n> "${arg}"`);
+  async fetchClientValues(@ConnectedSocket() socket: BounsbotSocket, @MessageBody() args: Array<string>): Promise<any> {
+    const [command, shardId] = args
+    console.log(`La shard ${socket.id} demande à '${shardId}' cette information:\n> "${command}"`);
 
+
+    if (shardId != null && parseInt(shardId) >= 0) {
+      if (parseInt(shardId) >= this.shardsCount) {
+        return { success: false, error: "Shard id out of range" }
+      }
+
+      if (!this.shards[parseInt(shardId)]) {
+        return { success: false, error: "Shard id not connected" }
+      }
+
+      try {
+        return await this.server.to(this.shards[parseInt(shardId)]).timeout(10000).emitWithAck("FETCH_CLIENT_VALUES", command)
+      }
+      catch (e) {
+        return { success: false, error: e }
+      }
+    }
+    else {
+      try {
+        return await this.server.timeout(1000).emitWithAck("FETCH_CLIENT_VALUES", command)
+      }
+      catch (e) {
+        return { success: false, error: e }
+      }
+    }
+  }
+
+  @SubscribeMessage('LEAVE_GUILDS')
+  async leaveGuild(@ConnectedSocket() socket: BounsbotSocket, @MessageBody() guilds: Array<string>): Promise<any> {
     try {
-      return await this.server.timeout(1000).emitWithAck("FETCH_CLIENT_VALUES", arg)
+      const response: Array<Array<string>> = await this.server.timeout(60000).emitWithAck("LEAVE_GUILDS", guilds)
+      return response.flat()
     }
     catch (e) {
-      return e
+      return []
+    }
+  }
+
+  @SubscribeMessage('GET_GUILDS_INVITE')
+  async getGuildsInvite(@ConnectedSocket() socket: BounsbotSocket, @MessageBody() guilds: Array<string>): Promise<any> {
+    try {
+      const response: Array<Array<string>> = await this.server.timeout(60000).emitWithAck("GET_GUILDS_INVITE", guilds)
+      return response.flat()
+    }
+    catch (e) {
+      return []
+    }
+  }
+
+  @SubscribeMessage('SEND_MESSAGE')
+  async sendMessage(@ConnectedSocket() socket: BounsbotSocket, @MessageBody() messageObject: Object): Promise<any> {
+    try {
+      const shardsResponse = await this.server.timeout(5000).emitWithAck('SEND_MESSAGE', messageObject);
+
+      return shardsResponse.find((e) => e !== null) || {
+        success: false,
+        message: "Bouns'bot n'a pas pu envoyé le message"
+      }
+    } catch (e) {
+      this.logger.error(e)
+      return {
+        success: false,
+        message: "Bouns'bot n'a pas pu envoyé le message"
+      }
     }
   }
 }

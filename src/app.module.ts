@@ -20,7 +20,7 @@ import { GuildModule } from './guild/guild.module';
         store: (await redisStore({
           socket: {
             host: 'redis',
-            port: parseInt(process.env.REDIS_PORT),
+            port: Number(process.env.REDIS_PORT),
           },
           password: process.env.REDIS_PASSWORD,
         })) as unknown as CacheStore,
