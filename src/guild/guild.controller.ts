@@ -56,7 +56,7 @@ export class GuildController {
     }
   }
 
-  @Post('/:guildId/send')
+  @Post('/send')
   @ApiOperation({ summary: 'Send message to a specific guildChannel' })
   @ApiResponse({
     status: 200,
