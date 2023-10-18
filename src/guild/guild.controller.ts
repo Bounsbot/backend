@@ -12,6 +12,7 @@ export class GuildController {
 
   constructor(
     private readonly eventService: EventGateway,
+    @Inject(CACHE_MANAGER) private cacheManager: CacheStore,
   ) { }
 
   @Get("/:guildId/:type")
@@ -85,18 +86,23 @@ export class GuildController {
     status: 200,
     description: 'Return the best guild'
   })
-  async bestGuild(@Body() guildHas: GuildHasDto) {
+  async bestGuild() {
     try {
+      let bestGuildObject = await this.cacheManager.get('BEST_GUILD');
+      if (bestGuildObject) return bestGuildObject;
+
       const bestGuild = await this.eventService.server.timeout(1000).emitWithAck('BEST_GUILD')
+      const totalGuild = await this.eventService.server.timeout(1000).emitWithAck('FETCH_CLIENT_VALUES', "client.guilds.cache.size")
 
-      let top10 = bestGuild.flat().sort((a, b) => b.memberCount - a.memberCount).slice(0, 10)
+      let guilds = bestGuild.flat().sort((a, b) => b.memberCount - a.memberCount).slice(0, 10)
 
-      return top10
+      bestGuildObject = { guilds, totalGuild: totalGuild.reduce((a, b) => a + b, 0) }
+      this.cacheManager.set('BEST_GUILD', bestGuildObject, { ttl: 600 });
+
+      return bestGuildObject
     } catch (e) {
       this.logger.error(e)
       return [];
     }
   }
-
-
 }
