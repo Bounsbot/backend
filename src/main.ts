@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { json, urlencoded } from 'express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import * as passport from 'passport';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -33,8 +34,12 @@ async function bootstrap() {
     },
   });
 
+
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   app.enableCors({
     origin: '*',
   });
