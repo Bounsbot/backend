@@ -45,10 +45,9 @@ export class GuildController {
     description: 'Returns only guild where bot is'
   })
   async hasGuild(@Body() guildHas: GuildHasDto) {
+    console.log("guildHas", guildHas)
     try {
-      const shardsResponse = await this.eventService.server.timeout(1000).emitWithAck('GUILD_HAS', {
-        has: guildHas
-      });
+      const shardsResponse = await this.eventService.server.timeout(1000).emitWithAck('GUILD_HAS', guildHas);
 
       return shardsResponse.flat()
     } catch (e) {

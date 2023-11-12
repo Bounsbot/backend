@@ -1,11 +1,19 @@
-import { User } from 'src/typeorm/entities/User.entity';
+// import { User } from 'src/typeorm/entities/User.entity';
 
 export type UserDetails = {
-  discordId: string;
-  discordTag: string;
-  avatar: string;
+  identifiant: string;
+  username: string;
+  picture: string;
   email: string;
 };
+
+export type Oauth2 = {
+  identifiant: string;
+  username: string;
+  picture: string;
+  email: string;
+};
+
 
 export type OAuth2Details = {
   discordId: string;
@@ -13,12 +21,13 @@ export type OAuth2Details = {
   refreshToken: string;
 };
 
-export type FindUserParams = Partial<{
-  discordId: string;
-  discordTag: string;
-  avatar: string;
-  email: string;
-}>;
+export type AccessTokenResponse = {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  refresh_token: string;
+  scope: string
+};
 
 export type FindOAuth2Params = Partial<{
   discordId: string;
@@ -26,4 +35,4 @@ export type FindOAuth2Params = Partial<{
   refreshToken: string;
 }>;
 
-export type Done = (err: Error, user: User) => void;
+export type Done = (err: Error, user: any) => void;

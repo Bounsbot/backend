@@ -1,18 +1,17 @@
 // import { User } from 'src/typeorm/entities/User.entity';
+import { User } from 'src/users/schemas/user.schema';
 import {
   FindOAuth2Params,
-  FindUserParams,
   OAuth2Details,
   UserDetails,
 } from '../../utils/types';
+import { Auth } from 'src/auth/schema/auth.schema';
 
 export interface IAuthService {
-  validateUser(datails: UserDetails): Promise<any>;
-  createUser(details: UserDetails): Promise<any>;
-  updateUser(details: UserDetails): Promise<any>;
-  findUser(params: FindUserParams): Promise<any>;
-  validateOAuth2(details: OAuth2Details): Promise<OAuth2Details>;
-  createOAuth2(details: OAuth2Details): Promise<OAuth2Details>;
-  updateOAuth2(details: OAuth2Details): Promise<OAuth2Details>;
-  findOAuth2(params: FindOAuth2Params): Promise<OAuth2Details>;
+  validateUser(details: UserDetails): Promise<User>;
+  createUser(details: UserDetails): Promise<User>;
+  updateUser(details: UserDetails): Promise<User>;
+  validateOAuth2(details: OAuth2Details): Promise<Auth>;
+  createOAuth2(details: OAuth2Details): Promise<Auth>;
+  updateOAuth2(details: OAuth2Details): Promise<Auth>;
 }

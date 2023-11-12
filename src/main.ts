@@ -4,6 +4,7 @@ import { json, urlencoded } from 'express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as passport from 'passport';
+import * as session from 'express-session';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -37,9 +38,20 @@ async function bootstrap() {
 
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
+
+  app.use(
+    session({
+      secret: "bounsbotleboss" || process.env.COOKIE_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 3600000 * 24,
+      },
+    }),
+  );
+
   app.use(passport.initialize());
   app.use(passport.session());
-
   app.enableCors({
     origin: '*',
   });
