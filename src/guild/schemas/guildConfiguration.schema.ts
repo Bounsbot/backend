@@ -7,6 +7,7 @@ import { WelcomeRoleConfiguration } from './nested/welcomeRole.schema';
 import { XpConfiguration } from './nested/xpConfiguration.schema';
 import { PalierConfiguration } from './nested/PalierConfiguration.schema';
 import { gainRolesLevelsConfiguration } from './nested/gainRolesLevels.schema';
+import { LogsConfiguration } from './nested/logsConfiguration.schema';
 
 // export type GlobalLevelDocument = GlobalLevel & Document;
 export type GuildConfigurationDocument = HydratedDocument<GuildConfiguration>;
@@ -151,8 +152,8 @@ export class GuildConfiguration {
   @Prop({ type: Boolean, default: false })
   activityRoleSendMessage: Boolean
 
-  @Prop({ type: Boolean, default: false })
-  logs: Boolean
+  @Prop({ type: LogsConfiguration, default: {} })
+  logs: LogsConfiguration
 
 }
 

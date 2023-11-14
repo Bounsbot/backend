@@ -28,6 +28,13 @@ export class AuthService implements IAuthService {
       },
     }).then(r => r.json());
 
+    this.validateUser({
+      identifiant: user.id,
+      username: user.username,
+      picture: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp`,
+      email: user.email,
+    });
+
     return user;
   }
 

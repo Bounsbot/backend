@@ -4,19 +4,37 @@ import { AuthenticatedGuard, DiscordAuthGuard } from '../utils/Guards';
 import { Cookie } from 'express-session';
 import { AuthService } from '../services/auth.service';
 import { MiddlewareBuilder } from '@nestjs/core';
+import { EventGateway } from 'src/event/event.gateway';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly eventService: EventGateway,
   ) { }
 
   @Get('guilds')
   async getGuilds(@Headers() headers) {
-    console.log("getGuilds", headers);
     const guilds = await this.authService.getGuilds(headers.authorization)
 
-    return guilds;
+    let guildAdmin = await guilds.filter(guild => guild.permissions === 2147483647)
+    let hasGuilds = []
+
+    try {
+      const shardsResponse = await this.eventService.server.timeout(1000).emitWithAck('GUILD_HAS', { has: guildAdmin.map(e => e.id) });
+      hasGuilds = shardsResponse.flat()
+
+      for (let guild of guildAdmin) {
+        guild.bot = hasGuilds.find((e) => e == guild.id) ? true : false
+      }
+
+    } catch (e) {
+      return [];
+    }
+
+    guildAdmin.sort((a, b) => (a.bot === b.bot) ? 0 : a.bot ? -1 : 1)
+
+    return guildAdmin;
   }
 
   @Get('user')

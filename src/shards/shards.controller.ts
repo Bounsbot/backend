@@ -18,7 +18,7 @@ export class ShardsController {
     description: 'Returns the shards information',
   })
   async getShardsInformation() {
-    let shardsInfo = await this.cacheManager.get('SHARDS_INFO');
+    let shardsInfo: Array<any> = await this.cacheManager.get('SHARDS_INFO');
     if (shardsInfo) return shardsInfo;
 
     shardsInfo = Array.from({ length: this.eventService.shardsCount }, (e, i) => ({ cluster_id: i, status: -1 }));
@@ -37,7 +37,9 @@ export class ShardsController {
       }
     }
 
-    this.cacheManager.set('SHARDS_INFO', shardsInfo, { ttl: 60 });
+    if (!shardsInfo.every(e => e.status === -1)) {
+      this.cacheManager.set('SHARDS_INFO', shardsInfo, { ttl: 60 });
+    }
 
     return shardsInfo;
   }

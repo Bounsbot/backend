@@ -31,4 +31,8 @@ export class GuildService {
 
         return roleChecker
     }
+
+    async getConfig(guildId: String) {
+        return await this.guildConfiguration.findOne({ guild: guildId }).exec()
+    }
 }

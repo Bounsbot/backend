@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Inject, Logger, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Logger, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EventGateway } from '../event/event.gateway';
 import { CACHE_MANAGER, CacheStore } from '@nestjs/cache-manager';
 import { GuildHasDto } from './dto/guild-has.dto';
 import { SendMessageDto } from './dto/send-message.dto';
+import { GuildService } from './guild.service';
 
 @Controller('guilds')
 @ApiTags('guilds')
@@ -13,6 +14,8 @@ export class GuildController {
   constructor(
     private readonly eventService: EventGateway,
     @Inject(CACHE_MANAGER) private cacheManager: CacheStore,
+
+    private readonly guildService: GuildService,
   ) { }
 
   @Get("/:guildId/:type")
@@ -45,7 +48,6 @@ export class GuildController {
     description: 'Returns only guild where bot is'
   })
   async hasGuild(@Body() guildHas: GuildHasDto) {
-    console.log("guildHas", guildHas)
     try {
       const shardsResponse = await this.eventService.server.timeout(1000).emitWithAck('GUILD_HAS', guildHas);
 
@@ -104,4 +106,32 @@ export class GuildController {
       return [];
     }
   }
+
+  @Get('/configuration')
+  @ApiOperation({ summary: 'return the configuration' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return the configuration'
+  })
+  async configuration(@Query('guildId') guildId: String) {
+    try {
+      return this.guildService.getConfig(guildId)
+    }
+    catch (e) {
+      this.logger.error(e)
+      return [];
+    }
+  }
+
+  @Patch('/configuration/:guildId')
+  @ApiOperation({ summary: 'Update the configuration' })
+  @ApiResponse({
+    status: 200,
+    description: 'Update the configuration'
+  })
+  async updateConfiguration(@Param('guildId') guildId: String, @Body() config: any) {
+    console.log("config", guildId, config)
+  }
 }
+
+
