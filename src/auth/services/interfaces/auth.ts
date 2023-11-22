@@ -1,7 +1,6 @@
 // import { User } from 'src/typeorm/entities/User.entity';
 import { User } from 'src/users/schemas/user.schema';
 import {
-  FindOAuth2Params,
   OAuth2Details,
   UserDetails,
 } from '../../utils/types';

@@ -29,10 +29,4 @@ export type AccessTokenResponse = {
   scope: string
 };
 
-export type FindOAuth2Params = Partial<{
-  discordId: string;
-  accessToken: string;
-  refreshToken: string;
-}>;
-
 export type Done = (err: Error, user: any) => void;

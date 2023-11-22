@@ -11,7 +11,6 @@ import { CommandsModule } from './commands/commands.module';
 import { ShardsModule } from './shards/shards.module';
 import { LevelsModule } from './levels/levels.module';
 import { GuildModule } from './guild/guild.module';
-import { PassportModule } from '@nestjs/passport';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -37,7 +36,6 @@ import { AuthModule } from './auth/auth.module';
     GuildModule,
     EventModule,
     AuthModule,
-    PassportModule.register({ session: true }),
   ],
   controllers: [AppController],
 })

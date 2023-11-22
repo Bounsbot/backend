@@ -12,12 +12,8 @@ import { Namespace } from 'socket.io';
 import { EventService } from './event.service';
 import { Inject, Logger } from '@nestjs/common';
 import { BounsbotSocket } from '../@types/BounsbotSocket';
-import { AddPixelDto } from './dto/add-pixel.dto';
 import { CACHE_MANAGER, CacheStore } from '@nestjs/cache-manager';
-import { createCanvas, loadImage } from 'canvas';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { NotificationType } from './dto/emit-pixelwar.dto';
-import { DateTime } from 'luxon';
 
 @WebSocketGateway({
   namespace: 'event',

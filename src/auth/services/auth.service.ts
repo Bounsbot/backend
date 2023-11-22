@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
   AccessTokenResponse,
-  FindOAuth2Params,
   OAuth2Details,
   UserDetails,
 } from '../utils/types';
