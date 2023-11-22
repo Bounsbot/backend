@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { GuildConfiguration, GuildConfigurationDocument } from './schemas/guildConfiguration.schema';
 import { EventGateway } from 'src/event/event.gateway';
+import { ConfigurationNotExistException } from './guild.exception';
 
 @Injectable()
 export class GuildService {
@@ -30,5 +31,16 @@ export class GuildService {
         }
 
         return roleChecker
+    }
+
+    async getConfig(guildId: String) {
+        return await this.guildConfiguration.findOne({ guild: guildId }).exec()
+    }
+
+    async updateConfiguration(guild: String, configuration: GuildConfiguration) {
+        if (!configuration) throw new ConfigurationNotExistException()
+        delete configuration.guild
+
+        return await this.guildConfiguration.updateOne({ guild }, configuration, { upsert: true }).exec()
     }
 }

@@ -11,7 +11,7 @@ export class SendMessageDto {
   })
   @IsNotEmpty()
   @Expose()
-  guildId: String;
+  guildId: string;
 
   @ApiProperty({
     type: String,
@@ -21,7 +21,7 @@ export class SendMessageDto {
   })
   @Expose()
   @IsNotEmpty()
-  channelId: String;
+  channelId: string;
 
   @ApiProperty({
     type: String,
@@ -31,24 +31,25 @@ export class SendMessageDto {
   })
   @Expose()
   @IsNotEmpty()
-  content: String;
+  content: string;
 
   @ApiProperty({
     type: Array<any>,
     description: 'embeds array',
-    required: true,
+    required: false,
+    default: [],
   })
   @Expose()
   @IsOptional()
   embeds: Array<any>;
 
   @ApiProperty({
-    type: Array<any>,
+    type: String,
     description: 'Id of message you want to reply',
-    required: true,
+    required: false,
     example: "1019363745438384129"
   })
   @Expose()
   @IsOptional()
-  replyTo: String;
+  replyTo: string;
 }
