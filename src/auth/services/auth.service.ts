@@ -10,6 +10,7 @@ import { User, UserDocument } from 'src/users/schemas/user.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Auth, AuthDocument } from '../schema/auth.schema';
+import { invalidTokenException } from '../auth.exception';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -56,6 +57,26 @@ export class AuthService implements IAuthService {
     return token;
   }
 
+  async removeToken(token: string) {
+    this.auth.deleteOne({ accessToken: token });
+
+    const res = await fetch('https://discord.com/api/oauth2/token/revoke', {
+      method: 'POST',
+      body: new URLSearchParams({
+        token,
+        client_id: process.env.DISCORD_CLIENT_ID,
+        client_secret: process.env.DISCORD_CLIENT_SECRET,
+      }).toString(),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }).then(r => r.json());
+
+    console.log(res);
+
+    return res;
+  }
+
   async refreshTokens(refreshToken: string) {
     const token = await fetch('https://discord.com/api/oauth2/token', {
       method: 'POST',
@@ -75,11 +96,17 @@ export class AuthService implements IAuthService {
   }
 
   async getGuilds(token: string) {
-    const guilds = await fetch('https://discord.com/api/users/@me/guilds', {
+    const response = await fetch('https://discord.com/api/users/@me/guilds', {
       headers: {
         authorization: token,
       },
-    }).then(r => r.json());
+    })
+
+    if (response.status < 200 || response.status >= 300) {
+      throw new invalidTokenException();
+    }
+
+    const guilds = await response.json();
 
     return guilds;
   }
@@ -87,18 +114,15 @@ export class AuthService implements IAuthService {
   async validateUser(details: UserDetails) {
     const { identifiant } = details;
     const user = await this.user.findOne({ identifiant });
-    console.log("validateUser", user);
     return (user ? this.updateUser(details) : this.createUser(details));
   }
 
   createUser(details: UserDetails) {
-    console.log("createUser", details);
     const userElement = new this.user(details);
     return userElement.save();
   }
 
   async updateUser(details: UserDetails) {
-    console.log("updateUser");
     await this.user.updateOne({ identifiant: details.identifiant }, { username: details.username, picture: details.picture, email: details.email })
     return this.user.findOne({ identifiant: details.identifiant });
   }
