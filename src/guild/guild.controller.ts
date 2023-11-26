@@ -5,8 +5,9 @@ import { CACHE_MANAGER, CacheStore } from '@nestjs/cache-manager';
 import { GuildHasDto } from './dto/guild-has.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { GuildService } from './guild.service';
-import { CantSendMessageException } from './guild.exception';
+import { CantSendMessageException, GuildConfigurationDoesntException, GuildConfigurationException } from './guild.exception';
 import { BounsbotRequest } from 'src/@types/BounsbotReq';
+import { BestGuildDto } from './dto/best-guild.dto';
 
 @Controller('guilds')
 @ApiTags('guilds')
@@ -28,7 +29,7 @@ export class GuildController {
   })
   async bestGuild() {
     try {
-      let bestGuildObject = await this.cacheManager.get('BEST_GUILD');
+      let bestGuildObject: BestGuildDto = await this.cacheManager.get('BEST_GUILD');
       if (bestGuildObject) return bestGuildObject;
 
       const bestGuild = await this.eventService.server.timeout(1000).emitWithAck('BEST_GUILD')
@@ -37,7 +38,9 @@ export class GuildController {
       let guilds = bestGuild.flat().sort((a, b) => b.memberCount - a.memberCount).slice(0, 10)
 
       bestGuildObject = { guilds, totalGuild: totalGuild.reduce((a, b) => a + b, 0) }
-      this.cacheManager.set('BEST_GUILD', bestGuildObject, { ttl: 600 });
+      if (bestGuildObject?.guilds?.length > 0 && bestGuildObject?.totalGuild) {
+        this.cacheManager.set('BEST_GUILD', bestGuildObject, { ttl: 600 });
+      }
 
       return bestGuildObject
     } catch (e) {
@@ -93,13 +96,21 @@ export class GuildController {
     status: 200,
     description: 'Return the configuration'
   })
-  async configuration(@Param('guildId') guildId: String) {
+  async configuration(@Req() request: BounsbotRequest) {
     try {
-      return this.guildService.getConfig(guildId)
+      let guildConfiguration = await this.cacheManager.get(`guild-config:${request.headers.guildid}`);
+      if (guildConfiguration) return guildConfiguration;
+
+      guildConfiguration = await this.guildService.getConfig(`${request.headers.guildid}`)
+
+      if (!guildConfiguration) return new GuildConfigurationDoesntException()
+      this.cacheManager.set(`guild-config:${request.headers.guildid}`, guildConfiguration, { ttl: 1800 });
+
+      return guildConfiguration
     }
     catch (e) {
       this.logger.error(e)
-      return [];
+      return new GuildConfigurationException()
     }
   }
 
@@ -109,8 +120,8 @@ export class GuildController {
     status: 200,
     description: 'Update the configuration'
   })
-  async updateConfiguration(@Param('guildId') guildId: String, @Body() configuration: any) {
-    return await this.guildService.updateConfiguration(guildId, configuration)
+  async updateConfiguration(@Req() request: BounsbotRequest, @Body() configuration: any) {
+    return await this.guildService.updateConfiguration(`${request.headers.guildid}`, configuration)
   }
 
   @Get("/:guildId/:type")

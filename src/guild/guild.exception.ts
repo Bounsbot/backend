@@ -26,3 +26,29 @@ export class CantSendMessageException extends HttpException {
         );
     }
 }
+
+export class GuildConfigurationException extends HttpException {
+    constructor() {
+        super(
+            {
+                message: 'Une erreur est survenue lors de la récupération de la configuration.',
+                status: HttpStatus.FORBIDDEN,
+                id: 'error.guilds.configuration',
+            },
+            HttpStatus.FORBIDDEN,
+        );
+    }
+}
+
+export class GuildConfigurationDoesntException extends HttpException {
+    constructor() {
+        super(
+            {
+                message: 'Aucune configuration n\'a été trouvé.',
+                status: HttpStatus.NOT_FOUND,
+                id: 'error.guilds.configuration.not_found',
+            },
+            HttpStatus.NOT_FOUND,
+        );
+    }
+}
