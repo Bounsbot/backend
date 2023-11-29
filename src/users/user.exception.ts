@@ -13,3 +13,17 @@ export class VoteObjectException extends HttpException {
   }
 }
 
+
+export class VoteCredentialDoesntMatchException extends HttpException {
+  constructor() {
+    super(
+      {
+        message: 'Vote credential doesn\'t match.',
+        status: HttpStatus.UNAUTHORIZED,
+        id: 'error.user.vote_credential',
+      },
+      HttpStatus.UNAUTHORIZED,
+    );
+  }
+}
+

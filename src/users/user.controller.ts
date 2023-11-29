@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Logger } from '@nestjs/common';
+import { Body, Controller, Get, Header, Logger, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EventGateway } from '../event/event.gateway';
 import { VoteDto } from './dto/vote.dto';
-import { VoteObjectException } from './user.exception';
+import { VoteCredentialDoesntMatchException, VoteObjectException } from './user.exception';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -21,7 +21,8 @@ export class UserController {
     status: 200,
     description: 'Add vote to user'
   })
-  async vote(@Body() voteObject: VoteDto) {
+  async vote(@Body() voteObject: VoteDto, @Req() req: any) {
+    if (!process.env.TOPGG_CREDENTIAL || req.headers.authorization !== process.env.TOPGG_CREDENTIAL) throw new VoteCredentialDoesntMatchException();
     if (voteObject.type != "upvote") throw new VoteObjectException();
 
     await this.userService.updateTopGGVote(voteObject)
