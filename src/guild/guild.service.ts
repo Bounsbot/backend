@@ -43,7 +43,13 @@ export class GuildService {
         if (!configuration) throw new ConfigurationNotExistException()
         delete configuration.guild
 
-        this.cacheManager.del(`guild-config:${guild}`)
+        let key = await this.cacheManager.get(`guild-config:${guild}`)
+
+        console.log("CACHE REDIS BEFORE", key)
+
+        await this.cacheManager.del(`guild-config:${guild}`)
+
+        console.log("CACHE REDIS AFTER", key)
 
         return await this.guildConfiguration.updateOne({ guild }, configuration, { upsert: true }).exec()
     }
