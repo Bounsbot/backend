@@ -45,13 +45,20 @@ export class EventGateway
 
   async handleConnection(socket: BounsbotSocket) {
     this.logger.log(`Socket ${socket.id} connected`);
-    if (socket.handshake.headers.authorization !== process.env.TOKEN_WEBSOCKET) {
-      this.logger.log(`Socket ${socket.id} unauthorized`);
-      return socket.disconnect(true);
-    }
+    try {
+      if (!process.env.TOKEN_WEBSOCKET) throw new Error("TOKEN_WEBSOCKET not found")
+      if (socket.handshake.headers.authorization !== process.env.TOKEN_WEBSOCKET) {
+        this.logger.log(`Socket ${socket.id} unauthorized`);
+        return throw new Error(`Socket ${socket.id} unauthorized`)
+      }
 
-    this.shards[parseInt(socket.handshake.headers.shard_id as string)] = socket.id
-    this.shardsCount = parseInt(socket.handshake.headers.shards_count as string)
+      this.shards[parseInt(socket.handshake.headers.shard_id as string)] = socket.id
+      this.shardsCount = parseInt(socket.handshake.headers.shards_count as string)
+    }
+    catch (e) {
+      socket.disconnect(true);
+      this.logger
+    }
   }
 
   private disconnect(socket: BounsbotSocket) {
