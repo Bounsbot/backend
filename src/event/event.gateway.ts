@@ -15,7 +15,7 @@ import { BounsbotSocket } from '../@types/BounsbotSocket';
 import { CACHE_MANAGER, CacheStore } from '@nestjs/cache-manager';
 import { SchedulerRegistry } from '@nestjs/schedule';
 
-@WebSocketGateway({
+@WebSocketGateway(Number(process.env.API_WEBSOCKET_PORT) || 3501, {
   namespace: 'event',
 })
 export class EventGateway
@@ -47,9 +47,11 @@ export class EventGateway
     this.logger.log(`Socket ${socket.id} connected`);
     try {
       if (!process.env.TOKEN_WEBSOCKET) throw new Error("TOKEN_WEBSOCKET not found")
-      if (socket.handshake.headers.authorization !== process.env.TOKEN_WEBSOCKET) {
+      if (!socket?.handshake?.headers?.authorization) throw new Error("Authorization header not found")
+
+      if (socket?.handshake?.headers?.authorization !== process?.env?.TOKEN_WEBSOCKET) {
         this.logger.log(`Socket ${socket.id} unauthorized`);
-        return throw new Error(`Socket ${socket.id} unauthorized`)
+        throw new Error(`Socket ${socket.id} unauthorized`)
       }
 
       this.shards[parseInt(socket.handshake.headers.shard_id as string)] = socket.id
@@ -57,7 +59,7 @@ export class EventGateway
     }
     catch (e) {
       socket.disconnect(true);
-      this.logger
+      this.logger.log(e);
     }
   }
 
