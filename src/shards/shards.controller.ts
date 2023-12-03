@@ -38,7 +38,7 @@ export class ShardsController {
     }
 
     if (!shardsInfo.every(e => e.status === -1)) {
-      this.cacheManager.set('SHARDS_INFO', shardsInfo, { ttl: 60 });
+      this.cacheManager.set('SHARDS_INFO', shardsInfo, { ttl: 20 });
     }
 
     return shardsInfo;
