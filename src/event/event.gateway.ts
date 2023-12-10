@@ -9,11 +9,8 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Namespace } from 'socket.io';
-import { EventService } from './event.service';
-import { Inject, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { BounsbotSocket } from '../@types/BounsbotSocket';
-import { CACHE_MANAGER, CacheStore } from '@nestjs/cache-manager';
-import { SchedulerRegistry } from '@nestjs/schedule';
 
 @WebSocketGateway(Number(process.env.API_WEBSOCKET_PORT) || 3501, {
   namespace: 'event',
@@ -23,9 +20,7 @@ export class EventGateway
   private readonly logger = new Logger(EventGateway.name);
 
   constructor(
-    private readonly eventService: EventService,
-    @Inject(CACHE_MANAGER) private cacheManager: CacheStore,
-    private schedulerRegistry: SchedulerRegistry,
+
   ) { }
 
   @WebSocketServer()
@@ -70,8 +65,7 @@ export class EventGateway
   @SubscribeMessage('FETCH_CLIENT_VALUES')
   async fetchClientValues(@ConnectedSocket() socket: BounsbotSocket, @MessageBody() args: Array<string>): Promise<any> {
     const [command, shardId] = args
-    console.log(`La shard ${socket.id} demande à '${shardId}' cette information:\n> "${command}"`);
-
+    this.logger.log(`La shard ${socket.id} demande à '${shardId}' cette information:\n> "${command}"`);
 
     if (shardId != null && parseInt(shardId) >= 0) {
       if (parseInt(shardId) >= this.shardsCount) {

@@ -1,5 +1,4 @@
-import { Controller, Get, Post, Query, Req } from '@nestjs/common';
-import { Request } from 'express';
+import { Controller, Get, Logger, Post, Query, Req } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { EventGateway } from 'src/event/event.gateway';
 import { JwtService } from '@nestjs/jwt';
@@ -8,22 +7,18 @@ import { invalidTokenException } from '../auth.exception';
 
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     private readonly authService: AuthService,
     private readonly eventService: EventGateway,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
   ) { }
 
   @Get('guilds')
   async getGuilds(@Req() request: BounsbotRequest) {
-    console.log("BounsbotRequest", request);
-    console.log("BounsbotRequest", request.discordToken);
-
-
     try {
       const guilds = await this.authService.getGuilds(request.discordToken)
-
-      console.log("guilds", guilds);
 
       let guildAdmin = await guilds.filter(guild => guild.permissions === 2147483647)
       let hasGuilds = []
@@ -35,7 +30,6 @@ export class AuthController {
         for (let guild of guildAdmin) {
           guild.bot = hasGuilds.find((e) => e == guild.id) ? true : false
         }
-
       } catch (e) {
         return [];
       }
@@ -61,7 +55,7 @@ export class AuthController {
 
     if (!code) return {
       success: false,
-      message: "No code",
+      message: "Code is missing",
       data: {}
     }
 
@@ -93,7 +87,7 @@ export class AuthController {
 
     }
     catch (e) {
-      console.error("AUTH login error", e);
+      this.logger.error("AUTH login error", e);
       return {
         success: false,
         message: "Error invalid code",
@@ -102,20 +96,12 @@ export class AuthController {
     }
   }
 
-  @Get('status')
-  status(@Req() req: Request) {
-    console.log("status", req);
-    return req;
-  }
-
   @Post('logout')
   logout(@Req() request: BounsbotRequest) {
 
     const token = request.headers.authorization.split(" ")[1];
 
     const { access_token, refresh_token, token_type, userId } = this.jwtService.verify(token);
-
-    console.log("verified", { access_token, refresh_token, userId });
 
     return this.authService.removeToken(access_token);
   }

@@ -1,11 +1,14 @@
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Controller, Get, Inject, Logger } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EventGateway } from '../event/event.gateway';
 import { CACHE_MANAGER, CacheStore } from '@nestjs/cache-manager';
+import { RetrieveCommandsException } from './commands.exception';
 
 @Controller('commands')
 @ApiTags('commands')
 export class CommandsController {
+  private readonly logger = new Logger(CommandsController.name);
+
   constructor(
     private readonly eventService: EventGateway,
     @Inject(CACHE_MANAGER) private cacheManager: CacheStore,
@@ -33,11 +36,8 @@ export class CommandsController {
       return commands;
 
     } catch (e) {
-      console.error(e);
-      return {
-        commands: [],
-        menu: [],
-      };
+      this.logger.error(e);
+      throw new RetrieveCommandsException();
     }
   }
 }
