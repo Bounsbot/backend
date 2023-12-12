@@ -43,13 +43,33 @@ export class GuildService {
         if (!configuration) throw new ConfigurationNotExistException()
         delete configuration.guild
 
-        let key = await this.cacheManager.get(`guild-config:${guild}`)
+        if ('chaineTwitch' in configuration || 'idChannelTwitchTchat' in configuration) {
+            const key: any = await this.cacheManager.get(`guild-config:${guild}`);
+            let oldChannelTwitch: String | null = null;
+            let oldTranscriptChannel: String | null = null;
+            let newChannelTwitch: String | null = null;
+            let newTranscriptChannel: String | null = null;
 
-        console.log("CACHE REDIS BEFORE", key)
+            if (key) {
+                oldChannelTwitch = key?.chaineTwitch;
+                oldTranscriptChannel = key?.idChannelTwitchTchat;
+            } else {
+                const oldConfig = await this.guildConfiguration.findOne({ guild }).exec();
+                if (oldConfig) {
+                    oldChannelTwitch = oldConfig.chaineTwitch;
+                    oldTranscriptChannel = oldConfig.idChannelTwitchTchat;
+                }
+            }
+
+            newChannelTwitch = configuration.chaineTwitch ?? oldChannelTwitch;
+            newTranscriptChannel = configuration.idChannelTwitchTchat ?? oldTranscriptChannel;
+
+            if (oldChannelTwitch && oldTranscriptChannel) {
+                this.eventService.server.emit('UPDATE_TWITCH_TRANSCRIPT', { oldChannelTwitch, oldTranscriptChannel, newChannelTwitch, newTranscriptChannel });
+            }
+        }
 
         await this.cacheManager.del(`guild-config:${guild}`)
-
-        console.log("CACHE REDIS AFTER", key)
 
         return await this.guildConfiguration.updateOne({ guild }, configuration, { upsert: true }).exec()
     }
