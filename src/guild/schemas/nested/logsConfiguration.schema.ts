@@ -44,8 +44,8 @@ export class LogsConfiguration extends Document {
     @Expose()
     emotes_stickers: String;
 
-    @Prop({ type: Number, default: 40 })
-    volumeLevel: Number;
+    @Prop({ type: String, default: "0" })
+    infractions: String;
 }
 
 export const LogsConfigurationSchema = SchemaFactory.createForClass(LogsConfiguration);
