@@ -12,6 +12,7 @@ import { ShardsModule } from './shards/shards.module';
 import { LevelsModule } from './levels/levels.module';
 import { GuildModule } from './guild/guild.module';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './users/user.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AuthModule } from './auth/auth.module';
     GuildModule,
     EventModule,
     AuthModule,
+    UserModule
   ],
   controllers: [AppController],
 })

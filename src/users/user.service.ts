@@ -13,7 +13,6 @@ export class UserService {
     private user: Model<UserDocument>,
 
     private eventService: EventGateway,
-    @Inject(CACHE_MANAGER) private cacheManager: CacheStore,
   ) { }
 
   async updateTopGGVote(voteObject: VoteDto) {

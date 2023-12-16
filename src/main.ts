@@ -18,11 +18,12 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Bouns\'Bot 🤖')
+    .setTitle('Bouns\'Bot API')
     .setDescription('Bounsbot API Documentation')
-    .setVersion('1.0')
+    .setVersion('1.0.0')
     .addBearerAuth()
     .addServer(`http://localhost:${process.env.API_PORT}`)
+    .addServer(`https://api.bounsbot.com`)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
