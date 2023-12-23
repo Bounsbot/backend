@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, Logger, Req } from '@nestjs/common';
+import { Body, Controller, Get, Header, Logger, Post, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EventGateway } from '../event/event.gateway';
 import { VoteDto } from './dto/vote.dto';
@@ -15,13 +15,14 @@ export class UserController {
     private readonly userService: UserService
   ) { }
 
-  @Get('/vote')
+  @Post('/vote')
   @ApiOperation({ summary: 'Add vote to user' })
   @ApiResponse({
     status: 200,
     description: 'Add vote to user'
   })
   async vote(@Body() voteObject: VoteDto, @Req() req: any) {
+    this.logger.log(`Vote received from ${req.headers['x-forwarded-for'] || req.connection.remoteAddress} with ${JSON.stringify(voteObject)}`)
     if (!process.env.TOPGG_CREDENTIAL || req.headers.authorization !== process.env.TOPGG_CREDENTIAL) throw new VoteCredentialDoesntMatchException();
     if (voteObject.type != "upvote") throw new VoteObjectException();
 
