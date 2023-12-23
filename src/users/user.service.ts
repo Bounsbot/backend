@@ -16,9 +16,9 @@ export class UserService {
   ) { }
 
   async updateTopGGVote(voteObject: VoteDto) {
-    let user = await this.user.findOne({ id: voteObject.user })
+    let user = await this.user.findOne({ identifiant: voteObject.user })
     if (!user) {
-      user = new this.user({ id: voteObject.user })
+      user = new this.user({ identifiant: voteObject.user, achievement: { topggVote: 0 } })
     }
 
     user.achievement.topggVote = (user.achievement.topggVote + 1) || 1
