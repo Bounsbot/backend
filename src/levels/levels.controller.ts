@@ -36,16 +36,11 @@ export class LevelsController {
     let configuration = await this.guildService.getRoleLevelConfiguration(id)
     let levelsRole = await this.guildService.checkLevelRoles(id, configuration)
 
-
-
-
-
     return {
       rank,
       configuration,
       levelsRole
 
     }
-
   }
 }

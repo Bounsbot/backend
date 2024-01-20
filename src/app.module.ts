@@ -13,6 +13,7 @@ import { LevelsModule } from './levels/levels.module';
 import { GuildModule } from './guild/guild.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './users/user.module';
+import { InfractionsModule } from './infractions/infractions.module';
 
 @Module({
   imports: [
@@ -37,7 +38,8 @@ import { UserModule } from './users/user.module';
     GuildModule,
     EventModule,
     AuthModule,
-    UserModule
+    UserModule,
+    InfractionsModule
   ],
   controllers: [AppController],
 })

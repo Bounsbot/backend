@@ -8,6 +8,7 @@ import { XpConfiguration } from './nested/xpConfiguration.schema';
 import { PalierConfiguration } from './nested/PalierConfiguration.schema';
 import { gainRolesLevelsConfiguration } from './nested/gainRolesLevels.schema';
 import { LogsConfiguration } from './nested/logsConfiguration.schema';
+import { AutoInfractions } from './nested/autoInfractions.schema';
 
 // export type GlobalLevelDocument = GlobalLevel & Document;
 export type GuildConfigurationDocument = HydratedDocument<GuildConfiguration>;
@@ -25,6 +26,9 @@ export class GuildConfiguration {
 
   @Prop({ type: Boolean, default: false })
   sheesh: Boolean;
+
+  @Prop({ type: Boolean, default: false })
+  phoneticPun: Boolean;
 
   @Prop({ type: Boolean, default: false })
   heyreaction: Boolean;
@@ -155,6 +159,13 @@ export class GuildConfiguration {
   @Prop({ type: LogsConfiguration, default: {} })
   logs: LogsConfiguration
 
+  @Prop({ type: String, default: null })
+  banAppealUrl: String
+
+  @Prop({
+    type: Array<AutoInfractions>, default: []
+  })
+  autoInfractions: Array<AutoInfractions>
 }
 
 export const GuildConfigurationSchema = SchemaFactory.createForClass(GuildConfiguration);
