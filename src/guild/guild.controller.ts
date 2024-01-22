@@ -32,8 +32,8 @@ export class GuildController {
       let bestGuildObject: BestGuildDto = await this.cacheManager.get('BEST_GUILD');
       if (bestGuildObject) return bestGuildObject;
 
-      const bestGuild = await this.eventService.server.timeout(1000).emitWithAck('BEST_GUILD')
-      const totalGuild = await this.eventService.server.timeout(1000).emitWithAck('FETCH_CLIENT_VALUES', "client.guilds.cache.size")
+      const bestGuild = await this.eventService.server.timeout(5000).emitWithAck('BEST_GUILD')
+      const totalGuild = await this.eventService.server.timeout(5000).emitWithAck('FETCH_CLIENT_VALUES', "client.guilds.cache.size")
 
       let guilds = bestGuild.flat().sort((a, b) => b.memberCount - a.memberCount).slice(0, 10)
 
@@ -57,7 +57,7 @@ export class GuildController {
   })
   async hasGuild(@Body() guildHas: GuildHasDto) {
     try {
-      const shardsResponse = await this.eventService.server.timeout(1000).emitWithAck('GUILD_HAS', guildHas);
+      const shardsResponse = await this.eventService.server.timeout(3000).emitWithAck('GUILD_HAS', guildHas);
 
       return shardsResponse.flat()
     } catch (e) {
@@ -76,7 +76,7 @@ export class GuildController {
     message.guildId = `${request.headers.guildid}`
 
     try {
-      const shardsResponse = await this.eventService.server.timeout(1000).emitWithAck('SEND_MESSAGE', message);
+      const shardsResponse = await this.eventService.server.timeout(5000).emitWithAck('SEND_MESSAGE', message);
 
       const response = shardsResponse.find((e) => e !== null);
 
@@ -132,7 +132,7 @@ export class GuildController {
   })
   async getGuildElement(@Param("guildId") guildId: String, @Param('type') type: String) {
     try {
-      const shardsResponse = await this.eventService.server.timeout(1000).emitWithAck('GUILD_INFO', {
+      const shardsResponse = await this.eventService.server.timeout(3000).emitWithAck('GUILD_INFO', {
         guildId,
         type
       })

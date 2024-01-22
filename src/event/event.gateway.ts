@@ -85,7 +85,7 @@ export class EventGateway
     }
     else {
       try {
-        return await this.server.timeout(1000).emitWithAck("FETCH_CLIENT_VALUES", command)
+        return await this.server.timeout(3000).emitWithAck("FETCH_CLIENT_VALUES", command)
       }
       catch (e) {
         return { success: false, error: e }

@@ -29,7 +29,7 @@ export class CommandsController {
     if (!firstSocket) return [];
 
     try {
-      const response = await this.eventService.server.timeout(1000).to(firstSocket).emitWithAck('COMMANDS');
+      const response = await this.eventService.server.timeout(3000).to(firstSocket).emitWithAck('COMMANDS');
 
       commands = response.find((e) => e != null);
       this.cacheManager.set('COMMANDS', commands, { ttl: 10800 });

@@ -52,7 +52,7 @@ export class ShardsController {
   })
   async locateGuildInShard(@Param('id') id: string) {
     try {
-      const getInfo = await this.eventService.server.timeout(1000).emitWithAck('FETCH_CLIENT_VALUES', "client.guilds.cache.has('" + id + "') ? process.env.SHARDS_ID : null");
+      const getInfo = await this.eventService.server.timeout(3000).emitWithAck('FETCH_CLIENT_VALUES', "client.guilds.cache.has('" + id + "') ? process.env.SHARDS_ID : null");
       const located = getInfo.find((e) => e !== null);
       return { shard: located || null }
     } catch (e) {
