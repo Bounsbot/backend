@@ -81,7 +81,7 @@ export class InfractionsService {
 
         const socketKey = Array.from(this.eventService.server.sockets.keys())
 
-        let moderatorInfo = (await this.eventService.server.to(socketKey[Math.floor(Math.random() * socketKey.length)]).timeout(1000).emitWithAck('FETCH_USERS', modId)).find((e) => e !== null)
+        let moderatorInfo = (await this.eventService.server.to(socketKey[Math.floor(Math.random() * socketKey.length)]).timeout(10000).emitWithAck('FETCH_USERS', modId)).find((e) => e !== null)
 
         if (!moderatorInfo) moderatorInfo = []
 
@@ -108,7 +108,7 @@ export class InfractionsService {
 
         const socketKey = Array.from(this.eventService.server.sockets.keys())
 
-        let users = (await this.eventService.server.to(socketKey[Math.floor(Math.random() * socketKey.length)]).timeout(1000).emitWithAck('FETCH_USERS', id)).find((e) => e !== null)
+        let users = (await this.eventService.server.to(socketKey[Math.floor(Math.random() * socketKey.length)]).timeout(10000).emitWithAck('FETCH_USERS', id)).find((e) => e !== null)
 
         if (!users) users = []
 
