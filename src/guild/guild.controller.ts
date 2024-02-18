@@ -32,9 +32,7 @@ export class GuildController {
       let bestGuildObject: BestGuildDto = await this.cacheManager.get('BEST_GUILD');
       if (bestGuildObject) return bestGuildObject;
 
-      const bestGuild = await this.eventService.server.timeout(5000).emitWithAck('BEST_GUILD')
-      const totalGuild = await this.eventService.server.timeout(5000).emitWithAck('FETCH_CLIENT_VALUES', "client.guilds.cache.size")
-
+      const [bestGuild, totalGuild] = await Promise.all([this.eventService.server.timeout(5000).emitWithAck('BEST_GUILD'), this.eventService.server.timeout(5000).emitWithAck('FETCH_CLIENT_VALUES', "client.guilds.cache.size")])
       let guilds = bestGuild.flat().sort((a, b) => b.memberCount - a.memberCount).slice(0, 10)
 
       bestGuildObject = { guilds, totalGuild: totalGuild.reduce((a, b) => a + b, 0) }
