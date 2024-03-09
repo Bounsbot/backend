@@ -24,6 +24,9 @@ export class UserService {
     user.achievement.topggVote = (user.achievement.topggVote + 1) || 1
     await user.save()
 
-    this.eventService.server.emit('NEW_VOTE', { user: voteObject.user, totalVote: user.achievement.topggVote })
+    const sockets = Array.from(this.eventService.server.sockets.keys())
+    const socket = sockets[Math.floor(Math.random() * sockets.length)]
+
+    this.eventService.server.to(socket).emit('NEW_VOTE', { user: voteObject.user, totalVote: user.achievement.topggVote })
   }
 }
