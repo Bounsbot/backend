@@ -24,7 +24,7 @@ export class AuthController {
       let hasGuilds = []
 
       try {
-        const shardsResponse = await this.eventService.server.timeout(3000).emitWithAck('GUILD_HAS', { has: guildAdmin.map(e => e.id) });
+        const shardsResponse = await this.eventService.server.timeout(20000).emitWithAck('GUILD_HAS', { has: guildAdmin.map(e => e.id) });
         hasGuilds = shardsResponse.flat()
 
         for (let guild of guildAdmin) {

@@ -85,7 +85,7 @@ export class EventGateway
     }
     else {
       try {
-        return await this.server.timeout(3000).emitWithAck("FETCH_CLIENT_VALUES", command)
+        return await this.server.timeout(20000).emitWithAck("FETCH_CLIENT_VALUES", command)
       }
       catch (e) {
         return { success: false, error: e }
@@ -118,7 +118,7 @@ export class EventGateway
   @SubscribeMessage('SEND_MESSAGE')
   async sendMessage(@ConnectedSocket() socket: BounsbotSocket, @MessageBody() messageObject: Object): Promise<any> {
     try {
-      const shardsResponse = await this.server.timeout(5000).emitWithAck('SEND_MESSAGE', messageObject);
+      const shardsResponse = await this.server.timeout(20000).emitWithAck('SEND_MESSAGE', messageObject);
 
       return shardsResponse.find((e) => e !== null) || {
         success: false,

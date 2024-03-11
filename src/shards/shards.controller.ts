@@ -24,7 +24,7 @@ export class ShardsController {
     shardsInfo = Array.from({ length: this.eventService.shardsCount }, (e, i) => ({ cluster_id: i, status: -1 }));
 
     const promises = Array.from(this.eventService.server.sockets.keys()).map(async (socket) => {
-      const response = await this.eventService.server.to(socket).timeout(300).emitWithAck('SHARDS_INFO')
+      const response = await this.eventService.server.to(socket).timeout(20000).emitWithAck('SHARDS_INFO')
       return response
     });
 
@@ -52,7 +52,7 @@ export class ShardsController {
   })
   async locateGuildInShard(@Param('id') id: string) {
     try {
-      const getInfo = await this.eventService.server.timeout(3000).emitWithAck('FETCH_CLIENT_VALUES', "client.guilds.cache.has('" + id + "') ? process.env.SHARDS_ID : null");
+      const getInfo = await this.eventService.server.timeout(20000).emitWithAck('FETCH_CLIENT_VALUES', "client.guilds.cache.has('" + id + "') ? process.env.SHARDS_ID : null");
       const located = getInfo.find((e) => e !== null);
       return { shard: located || null }
     } catch (e) {

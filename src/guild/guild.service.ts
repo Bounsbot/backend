@@ -25,7 +25,7 @@ export class GuildService {
 
         let roles = configuration.gainRolesLevels.sort((a, b) => a.level - b.level)
 
-        let roleChecker = (await this.eventService.server.timeout(3000).emitWithAck('ROLE_LEVEL_UPDATE', guildId, roles)).find((e) => e !== null)
+        let roleChecker = (await this.eventService.server.timeout(20000).emitWithAck('ROLE_LEVEL_UPDATE', guildId, roles)).find((e) => e !== null)
 
         if (roles.length != roleChecker.length) {
             configuration.gainRolesLevels = roleChecker

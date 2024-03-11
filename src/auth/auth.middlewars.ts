@@ -24,7 +24,7 @@ export class AuthGuildAccessMiddleware implements NestMiddleware {
             req.discordToken = token_type + " " + access_token
             req.userId = userId
 
-            const permission = await this.eventService.server.timeout(2500).emitWithAck('HAS_GUILD_PERM', { guildId: req.headers.guildid, userId, permissions: "Administrator" })
+            const permission = await this.eventService.server.timeout(20000).emitWithAck('HAS_GUILD_PERM', { guildId: req.headers.guildid, userId, permissions: "Administrator" })
 
             if (!permission) throw new GuildIdMissingException();
 
