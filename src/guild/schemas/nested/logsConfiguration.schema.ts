@@ -4,6 +4,14 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class LogsConfiguration extends Document {
+    @Prop({ type: Array<String>, default: [] })
+    @Expose()
+    excludeMessageChannels: Array<String>;
+
+    @Prop({ type: Array<String>, default: [] })
+    @Expose()
+    excludeVocalChannels: Array<String>;
+
     @Prop({ type: String, default: "0" })
     @Expose()
     message: String;

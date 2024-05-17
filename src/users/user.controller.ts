@@ -4,6 +4,8 @@ import { EventGateway } from '../event/event.gateway';
 import { VoteDto } from './dto/vote.dto';
 import { VoteCredentialDoesntMatchException, VoteObjectException } from './user.exception';
 import { UserService } from './user.service';
+import { UserDto } from './dto/user';
+import { UsersIdListDto } from './dto/usersId';
 
 @Controller('user')
 @ApiTags('user')
@@ -28,6 +30,17 @@ export class UserController {
 
     await this.userService.updateTopGGVote(voteObject)
     return { success: true }
+  }
+
+  @Post('/getusers')
+  @ApiOperation({ summary: 'get users data' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns list of users',
+  })
+  async getUsersInformations(@Body() userId: UsersIdListDto): Promise<UserDto[]> {
+    console.log("userId", userId)
+    return await this.userService.findUserInformations(userId.guildId, userId.ids)
   }
 }
 

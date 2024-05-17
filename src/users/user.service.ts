@@ -29,4 +29,12 @@ export class UserService {
 
     this.eventService.server.to(socket).emit('NEW_VOTE', { user: voteObject.user, totalVote: user.achievement.topggVote })
   }
+
+
+  async findUserInformations(guildId: String, usersIds: String[]) {
+    let users = (await this.eventService.server.timeout(60000).emitWithAck('FETCH_GUILD_MEMBER', guildId, usersIds)).find((e) => e !== null)
+    if (!users) users = []
+
+    return users;
+  }
 }

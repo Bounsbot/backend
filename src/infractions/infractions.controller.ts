@@ -1,4 +1,4 @@
-import { Controller, DefaultValuePipe, Get, Inject, Param, ParseIntPipe, Query, Req } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Get, Inject, Param, ParseIntPipe, Post, Query, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EventGateway } from '../event/event.gateway';
 import { CACHE_MANAGER, CacheStore } from '@nestjs/cache-manager';

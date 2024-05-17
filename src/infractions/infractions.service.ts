@@ -62,7 +62,7 @@ export class InfractionsService {
 
     async generateModeratorStats(guildId: String) {
         const stats = await this.infractions.aggregate([
-            { $match: { guildId } },
+            { $match: { guildId, type: { $ne: 'AUTOMOD' } } },
             {
                 $group: {
                     _id: '$moderatorId',
@@ -99,30 +99,6 @@ export class InfractionsService {
     async findInfractionsWithPagination(page: number, limit: number, guildId: String) {
         const infractions = await this.infractions.find({ guildId }).sort({ createdAt: -1 }).skip(page * limit).limit(limit).lean()
 
-
-        //je veux une map avec moderatorId et userId  mais flat
-        const id = infractions.reduce((acc, e) => {
-            acc.push(e.userId, e.moderatorId);
-            return acc;
-        }, []).filter((e, i, a) => a.indexOf(e) === i);
-
-        const socketKey = Array.from(this.eventService.server.sockets.keys())
-
-        let users = (await this.eventService.server.to(socketKey[Math.floor(Math.random() * socketKey.length)]).timeout(10000).emitWithAck('FETCH_USERS', id)).find((e) => e !== null)
-
-        if (!users) users = []
-
-        const infractionsWithUser = infractions.map((e) => {
-            const user = users.find((u) => u.id === e.userId);
-            const moderator = users.find((u) => u.id === e.moderatorId);
-
-            return {
-                ...e,
-                user: user ? user : null,
-                moderator: moderator ? moderator : null,
-            };
-        });
-
-        return infractionsWithUser;
+        return infractions;
     }
 }
